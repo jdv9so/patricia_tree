@@ -329,7 +329,7 @@ impl<V> PatriciaMap<V> {
     pub fn iter_prefix<'a, 'b>(
         &'a self,
         prefix: &'b [u8],
-    ) -> impl 'a + Iterator<Item = (Vec<u8>, &'a V)>
+    ) -> impl 'a + Iterator<Item = (&'a [u8], &'a V)>
     where
         'b: 'a,
     {
@@ -484,13 +484,13 @@ impl<'a, V: 'a> Iter<'a, V> {
     }
 }
 impl<'a, V: 'a> Iterator for Iter<'a, V> {
-    type Item = (Vec<u8>, &'a V);
+    type Item = (&'a [u8], &'a V);
     fn next(&mut self) -> Option<Self::Item> {
         while let Some((key_len, node)) = self.nodes.next() {
             self.key.truncate(self.key_offset + key_len);
             self.key.extend(node.label());
             if let Some(value) = node.value() {
-                return Some((self.key.clone(), value));
+                return Some((node.label(), value));
             }
         }
         None
@@ -544,7 +544,7 @@ impl<'a, V: 'a> Iterator for IterMut<'a, V> {
 #[derive(Debug)]
 pub struct Keys<'a, V: 'a>(Iter<'a, V>);
 impl<'a, V: 'a> Iterator for Keys<'a, V> {
-    type Item = Vec<u8>;
+    type Item = &'a [u8];
     fn next(&mut self) -> Option<Self::Item> {
         self.0.next().map(|(k, _)| k)
     }
