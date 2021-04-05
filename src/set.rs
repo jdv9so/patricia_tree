@@ -213,7 +213,7 @@ impl PatriciaSet {
     ///
     /// assert_eq!(set.iter_prefix(b"ba").collect::<Vec<_>>(), [Vec::from("bar"), "baz".into()]);
     /// ```
-    pub fn iter_prefix<'a, 'b>(&'a self, prefix: &'b [u8]) -> impl 'a + Iterator<Item = Vec<u8>>
+    pub fn iter_prefix<'a, 'b>(&'a self, prefix: &'b [u8]) -> impl 'a + Iterator<Item = &[u8]>
     where
         'b: 'a,
     {
@@ -282,7 +282,7 @@ impl AsRef<Node<()>> for PatriciaSet {
 #[derive(Debug)]
 pub struct Iter<'a>(map::Keys<'a, ()>);
 impl<'a> Iterator for Iter<'a> {
-    type Item = Vec<u8>;
+    type Item = &'a [u8];
     fn next(&mut self) -> Option<Self::Item> {
         self.0.next()
     }
